@@ -6,7 +6,8 @@ include ../Make.cfg
 
 
 SOURCES = startup_stm32f429_439xx.s \
-	  system_stm32f4xx.c
+	  system_stm32f4xx.c \
+	  syscalls.c
 
 OUTPUT_DIR = obj
 

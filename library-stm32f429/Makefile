@@ -37,11 +37,24 @@ SOURCES := $(STM_COMMON)/Libraries/STM32F4xx_StdPeriph_Driver/src/misc.c \
 	$(STM_COMMON)/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_syscfg.c \
 	$(STM_COMMON)/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_tim.c \
 	$(STM_COMMON)/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_usart.c \
-	$(STM_COMMON)/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c
+	$(STM_COMMON)/Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c \
+	$(STM_COMMON)/Utilities/STM32F429I-Discovery/stm32f429i_discovery.c \
+	$(STM_COMMON)/Utilities/STM32F429I-Discovery/stm32f429i_discovery_i2c_ee.c \
+	$(STM_COMMON)/Utilities/STM32F429I-Discovery/stm32f429i_discovery_ioe.c \
+	$(STM_COMMON)/Utilities/STM32F429I-Discovery/stm32f429i_discovery_l3gd20.c \
+	$(STM_COMMON)/Utilities/STM32F429I-Discovery/stm32f429i_discovery_lcd.c \
+	$(STM_COMMON)/Utilities/STM32F429I-Discovery/stm32f429i_discovery_sdram.c \
+	$(STM_COMMON)/Utilities/Common/fonts.c \
+	$(STM_COMMON)/Utilities/Common/lcd_log.c
+
+
+
 
 OUTPUT_DIR = obj
 
 OBJ := $(patsubst $(STM_COMMON)/Libraries/STM32F4xx_StdPeriph_Driver/src/%.c,$(OUTPUT_DIR)/%.o, $(SOURCES))
+OBJ += $(patsubst $(STM_COMMON)/Utilities/STM32F429I-Discovery/%.c,$(OUTPUT_DIR)/%.o, $(SOURCES))
+OBJ += $(patsubst $(STM_COMMON)/Utilities/Common/%.c,$(OUTPUT_DIR)/%.o, $(SOURCES))
 
 LIBRARY_NAME := libstm32f429-periph.a
 
@@ -85,6 +98,57 @@ clean:
 
 # Implicit rules
 $(OUTPUT_DIR)/%.o : $(STM_COMMON)/Libraries/STM32F4xx_StdPeriph_Driver/src/%.c
+	@$(ECHO) -n "$(COLOR_BLUE)[CC] $< -> $@ ... "
+ifndef V
+	@$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@ 2> temp.log || touch temp.errors
+else
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@ 2> temp.log || touch temp.errors
+endif
+	@if [ -e temp.errors ]; then \
+	    $(ECHO) "$(COLOR_RED)[ERRORS]:" 1>&2; \
+	    cat temp.log 1>&2; \
+	    $(ECHO) -n "$(COLOR_RESET)"; \
+	    rm -f temp.log temp.errors; \
+	    exit 1; \
+	elif [ -s temp.log ]; then \
+	    $(ECHO) "$(COLOR_YELLOW)[WARNINGS]:" 1>&2; \
+	    cat temp.log 1>&2; \
+	else \
+	    $(ECHO) "$(COLOR_GREEN) [OK]"; \
+	fi
+	@$(ECHO) -n "$(COLOR_RESET)"
+	@rm -f temp.log temp.errors
+
+
+
+# Implicit rules
+$(OUTPUT_DIR)/%.o : $(STM_COMMON)/Utilities/STM32F429I-Discovery/%.c
+	@$(ECHO) -n "$(COLOR_BLUE)[CC] $< -> $@ ... "
+ifndef V
+	@$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@ 2> temp.log || touch temp.errors
+else
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@ 2> temp.log || touch temp.errors
+endif
+	@if [ -e temp.errors ]; then \
+	    $(ECHO) "$(COLOR_RED)[ERRORS]:" 1>&2; \
+	    cat temp.log 1>&2; \
+	    $(ECHO) -n "$(COLOR_RESET)"; \
+	    rm -f temp.log temp.errors; \
+	    exit 1; \
+	elif [ -s temp.log ]; then \
+	    $(ECHO) "$(COLOR_YELLOW)[WARNINGS]:" 1>&2; \
+	    cat temp.log 1>&2; \
+	else \
+	    $(ECHO) "$(COLOR_GREEN) [OK]"; \
+	fi
+	@$(ECHO) -n "$(COLOR_RESET)"
+	@rm -f temp.log temp.errors
+
+
+
+
+# Implicit rules
+$(OUTPUT_DIR)/%.o : $(STM_COMMON)/Utilities/Common/%.c
 	@$(ECHO) -n "$(COLOR_BLUE)[CC] $< -> $@ ... "
 ifndef V
 	@$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@ 2> temp.log || touch temp.errors
