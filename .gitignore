@@ -1,2 +1,6 @@
 *.a
 */obj/*
+temp.log
+stm32f429-project-template
+stm32f429-project-template.bin
+stm32f429-project-template.hex
